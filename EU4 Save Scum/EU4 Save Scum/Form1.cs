@@ -14,9 +14,28 @@ namespace EU4_Save_Scum
     {
         public Form1()
         {
+            SaveHandler newHandler = new SaveHandler();
+            newHandler.getSaves();
             InitializeComponent();
-           
-            label1.Text = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
+            string[] fileNames = newHandler.getSaves();
+            for (int i = 0; i < fileNames.Length; i++)
+            {
+                savesCheckBox.Items.Add(fileNames[i]);
+                saveBox.Items.Add(fileNames[i]);
+            } 
+            label2.Text = newHandler.fileName;
+            label1.Text = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games" + newHandler.selectedSave);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveHandler hashHandler = new SaveHandler();
+            hashHandler.selectedSave = hashHandler.saveDir + "\\tigerZ.eu4";
+            string save = hashHandler.saveDir + "\\tigerZ.eu4";
+            /* byte[] Hash = hashHandler.hashSaves(hashHandler.selectedSave);
+            string results = "";
+            foreach(byte b in Hash) results += b.ToString("x2"); */
+            label2.Text = hashHandler.firstHash(save);
         }
     }
 }

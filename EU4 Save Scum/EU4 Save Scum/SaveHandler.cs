@@ -10,18 +10,54 @@ namespace EU4_Save_Scum
 {
     class SaveHandler
     {
-        private string saveDir = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
+        
+        public string saveDir = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
         public string selectedSave;
         public string saveHash;
         public string[] saveFiles;
+        public string fileName;
+        // public string[] nameArray;
+        private MD5 md5 = MD5.Create();
         public string[] getSaves()
         {
-            string[] saveFiles = Directory.GetFiles(saveDir, "*.eu4");
-            return saveFiles;
+            saveFiles = Directory.GetFiles(saveDir, "*.eu4");
+            string[] saveArray = new String[saveFiles.Length];
+            for (int i = 0; i < saveFiles.Length; i++)
+            {
+                fileName = Path.GetFileNameWithoutExtension(saveFiles[i]);
+                saveArray[i] = fileName;
+            }  
+            return saveArray;
         }
-        public void hashSaves()
+        public byte[] hashSaves(string filename)
         {
-         
+            
+            using (FileStream stream = File.OpenRead(filename))
+            {
+                return md5.ComputeHash(stream);
+            }
+        }
+        public static string bytesToString(byte[] bytes)
+        {
+            string results ="";
+            foreach (byte b in bytes) results += b.ToString("x2");
+            return results;
+        }
+        public bool compareHash()
+        {
+            string hashResults = bytesToString(hashSaves(saveDir + selectedSave));
+            if (hashResults == saveHash)
+            {
+                return true;
+            }
+            else { return false; }
+
+        }
+        public string firstHash(string path)
+        {
+            string initHash = bytesToString(hashSaves(path));
+            return initHash;
+
         }
     }
 }
