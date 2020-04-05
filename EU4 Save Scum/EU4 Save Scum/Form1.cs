@@ -14,12 +14,13 @@ namespace EU4_Save_Scum
     {
         public string[] backupSaves;
         public string[] savesNoNulls;
+        public string saveDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
         public Form1()
         {
             SaveHandler newHandler = new SaveHandler();
-            newHandler.getSaves();
+            newHandler.getSaves(saveDirectory);
             InitializeComponent();
-            string[] fileNames = newHandler.getSaves();
+            string[] fileNames = newHandler.getSaves(saveDirectory);
             for (int i = 0; i < fileNames.Length; i++)
             {
                 // Need to check if value is null. Length will be longer since Backup files are removed.
@@ -39,10 +40,7 @@ namespace EU4_Save_Scum
 
         private void button1_Click(object sender, EventArgs e)
         {
-            /* SaveHandler hashHandler = new SaveHandler();
-            hashHandler.selectedSave = hashHandler.saveDir + "\\tigerZ.eu4";
-            string save = hashHandler.saveDir + "\\tigerZ.eu4";
-            label2.Text = hashHandler.firstHash(save); */
+
             ArchiveHandler aHandlder = new ArchiveHandler();
             aHandlder.RenameFile("test");
         }

@@ -12,14 +12,14 @@ namespace EU4_Save_Scum
     class SaveHandler
     {
         
-        public string saveDir = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
+        // public string saveDir = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
         public string selectedSave;
         public string saveHash;
         public string[] saveFiles;
         public string fileName;
         // public string[] nameArray;
         private MD5 md5 = MD5.Create();
-        public string[] getSaves()
+        public string[] getSaves(string saveDir)
         {
             saveFiles = Directory.GetFiles(saveDir, "*.eu4");
             string[] saveArray = new String[saveFiles.Length];
@@ -52,7 +52,7 @@ namespace EU4_Save_Scum
             foreach (byte b in bytes) results += b.ToString("x2");
             return results;
         }
-        public bool compareHash()
+        public bool compareHash(string saveDir)
         {
             // TO DO: Needs to be written..
             string hashResults = bytesToString(hashSaves(saveDir + selectedSave));
