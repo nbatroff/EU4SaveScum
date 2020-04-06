@@ -14,12 +14,23 @@ namespace EU4_Save_Scum
     {
         public string[] backupSaves;
         public string[] savesNoNulls;
-        public string saveDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
+        public string saveDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Paradox Interactive\Europa Universalis IV\save games\");
+        public string selectedSave;
+        private string selectedSaveNoExt;
+        public string initHash = "";
+        private string fileExt = ".eu4";
         public Form1()
+        {
+
+            InitializeComponent();
+            addSaves();
+            
+       
+        }
+        private void addSaves()
         {
             SaveHandler newHandler = new SaveHandler();
             newHandler.getSaves(saveDirectory);
-            InitializeComponent();
             string[] fileNames = newHandler.getSaves(saveDirectory);
             for (int i = 0; i < fileNames.Length; i++)
             {
@@ -33,16 +44,56 @@ namespace EU4_Save_Scum
                     savesCheckBox.Items.Add(fileNames[i]);
                     saveBox.Items.Add(fileNames[i]);
                 }
-            } 
-            label2.Text = newHandler.fileName;
-            label1.Text = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games" + newHandler.selectedSave);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            timer1.Start();
+        }
 
-            ArchiveHandler aHandlder = new ArchiveHandler();
-            aHandlder.RenameFile("test");
+        private void saveBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            selectedSaveNoExt = saveBox.Text;
+            selectedSave = saveBox.Text + fileExt;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            string curHash;
+            bool hashChanged;
+            SaveHandler SaveTick = new SaveHandler();
+            ArchiveHandler ArchiveTick = new ArchiveHandler();
+            if (initHash == "")
+            {
+                initHash = SaveTick.HashSaves(selectedSave);
+                label1.Text = initHash;
+                ArchiveTick.ArchiveFile(selectedSaveNoExt);
+            }
+            else
+            {
+                hashChanged = SaveTick.compareHash(saveDirectory, selectedSave);
+                if (hashChanged == true)
+                {
+                    ArchiveTick.ArchiveFile(selectedSaveNoExt);
+                }
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            timer1.Stop();
+        }
+
+        private void refreshSaves_Tick(object sender, EventArgs e)
+        {
+            addSaves();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            addSaves();
         }
     }
 }

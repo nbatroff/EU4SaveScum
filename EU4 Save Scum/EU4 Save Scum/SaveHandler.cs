@@ -12,8 +12,7 @@ namespace EU4_Save_Scum
     class SaveHandler
     {
         
-        // public string saveDir = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Paradox Interactive\\Europa Universalis IV\\save games");
-        public string selectedSave;
+        public string saveDir = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Paradox Interactive\Europa Universalis IV\save games\");
         public string saveHash;
         public string[] saveFiles;
         public string fileName;
@@ -38,12 +37,15 @@ namespace EU4_Save_Scum
             }  
             return saveArray;
         }
-        public byte[] hashSaves(string filename)
+        public byte[] MD5Hash(string filename)
         {
-            
-            using (FileStream stream = File.OpenRead(filename))
+            var path = Path.Combine(saveDir, filename);
+            using (var md5 = MD5.Create())
             {
-                return md5.ComputeHash(stream);
+                using (var stream = File.OpenRead(path))
+                {
+                    return md5.ComputeHash(stream);
+                }
             }
         }
         public static string bytesToString(byte[] bytes)
@@ -52,10 +54,14 @@ namespace EU4_Save_Scum
             foreach (byte b in bytes) results += b.ToString("x2");
             return results;
         }
-        public bool compareHash(string saveDir)
+        public bool compareHash(string saveDir, string selectedSave)
         {
             // TO DO: Needs to be written..
-            string hashResults = bytesToString(hashSaves(saveDir + selectedSave));
+            string hashResults = bytesToString(MD5Hash(saveDir + selectedSave));
+            if (saveHash == null)
+            {
+                saveHash = bytesToString(MD5Hash(saveDir + selectedSave));
+            }
             if (hashResults == saveHash)
             {
                 return true;
@@ -63,9 +69,9 @@ namespace EU4_Save_Scum
             else { return false; }
 
         }
-        public string firstHash(string path)
+        public string HashSaves(string filename)
         {
-            string initHash = bytesToString(hashSaves(path));
+            string initHash = bytesToString(MD5Hash(filename));
             return initHash;
 
         }
